@@ -1,8 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -90,157 +89,133 @@ export default function NotificationPage() {
   const getTypeIcon = (type: NotificationType) => {
     switch (type) {
       case "success":
-        return <CheckCircle2 className="w-5 h-5 text-emerald-500" />;
+        return <CheckCircle2 className="w-5 h-5 text-secondary" />;
       case "info":
-        return <Info className="w-5 h-5 text-blue-500" />;
+        return <Info className="w-5 h-5 text-primary" />;
       case "warning":
-        return <Bell className="w-5 h-5 text-amber-500" />;
+        return <Bell className="w-5 h-5 text-orange-500" />;
       case "error":
-        return <XCircle className="w-5 h-5 text-rose-500" />;
+        return <XCircle className="w-5 h-5 text-destructive" />;
     }
   };
 
   const getTypeStyles = (type: NotificationType) => {
     switch (type) {
       case "success":
-        return "bg-emerald-50 text-emerald-700 border-emerald-100";
+        return "bg-secondary/10 text-secondary border-secondary/20";
       case "info":
-        return "bg-blue-50 text-blue-700 border-blue-100";
+        return "bg-primary/10 text-primary border-primary/20";
       case "warning":
-        return "bg-amber-50 text-amber-700 border-amber-100";
+        return "bg-orange-50 text-orange-600 border-orange-100";
       case "error":
-        return "bg-rose-50 text-rose-700 border-rose-100";
+        return "bg-destructive/10 text-destructive border-destructive/20";
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Notifications</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">Manage and stay updated with your latest alerts.</p>
+          <h1 className="text-2xl font-medium text-[#1A1D2E]">Notifications</h1>
+          <p className="text-[15px] text-[#54617A] leading-relaxed">Stay updated with the latest alerts and system activities.</p>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <Button
-            variant="outline"
+        <div className="flex items-center gap-3">
+          <button
             onClick={() => setNotifications(notifications.map(n => ({ ...n, read: true })))}
-            className="w-full sm:w-auto rounded-xl sm:rounded-full px-6 border-[#6BB9BA] text-[#6BB9BA] hover:bg-[#6BB9BA]/10 shadow-sm transition-all"
+            className="h-11 px-6 rounded-lg border border-gray-200 text-[#54617A] font-medium hover:bg-gray-50 transition-all cursor-pointer whitespace-nowrap bg-white shadow-none"
           >
             Mark all as read
-          </Button>
-          <Button
-            variant="destructive"
+          </button>
+          <button
             onClick={clearAll}
-            className="w-full sm:w-auto rounded-xl sm:rounded-full px-6 bg-[#FF5858] hover:bg-[#ff4545] shadow-md border-none transition-all"
+            className="h-11 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-all cursor-pointer whitespace-nowrap shadow-none"
           >
             Clear All
-          </Button>
+          </button>
         </div>
       </motion.div>
 
-      <Card className="border-none shadow-xl bg-white/50 backdrop-blur-xl rounded-3xl overflow-hidden p-0">
-        <CardHeader className="bg-gradient-to-r from-[#6BB9BA]/10 to-[#9B85C1]/10 border-b border-gray-100">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2 pt-5">
-            <Bell className="w-5 h-5 text-[#6BB9BA]" />
-            Recent Activity
-            <Badge variant="secondary" className="ml-2 bg-[#6BB9BA] text-white rounded-full">
-              {notifications.length} Total
-            </Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0 overflow-hidden">
-          <div className="relative overflow-x-auto CustomScrollbar">
-            <Table className="min-w-[500px] md:min-w-full">
-              <TableHeader className="bg-gray-50/50">
-                <TableRow className="hover:bg-transparent border-gray-100">
-                  <TableHead className="w-[60px] sm:w-[80px] text-center">Status</TableHead>
-                  <TableHead className="min-w-[200px] py-4">Notification</TableHead>
-                  <TableHead className="hidden md:table-cell">Type</TableHead>
-                  <TableHead className="hidden sm:table-cell text-right">Time</TableHead>
-                  <TableHead className="w-[80px] sm:w-[100px] text-right pr-6">Action</TableHead>
+      <Card className="border-none bg-white rounded-2xl overflow-hidden shadow-none p-0">
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-[#EBF2FA]/30">
+                <TableRow className="border-none hover:bg-transparent">
+                  <TableHead className="w-[80px] text-center px-6 py-5 text-[15px] font-semibold text-gray-700">Status</TableHead>
+                  <TableHead className="py-5 px-6 text-[15px] font-semibold text-gray-700">Message</TableHead>
+                  <TableHead className="hidden md:table-cell py-5 px-6 text-[15px] font-semibold text-gray-700">Type</TableHead>
+                  <TableHead className="hidden sm:table-cell text-right py-5 px-6 text-[15px] font-semibold text-gray-700">Time</TableHead>
+                  <TableHead className="w-[100px] text-right pr-8 py-5 text-[15px] font-semibold text-gray-700">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <AnimatePresence initial={false}>
                   {notifications.length > 0 ? (
                     notifications.map((notification) => (
-                      <motion.tr
+                      <TableRow
                         key={notification.id}
-                        layout
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{
-                          opacity: 0,
-                          scale: 0.95,
-                          transition: { duration: 0.2 }
-                        }}
-                        transition={{
-                          duration: 0.3,
-                          opacity: { duration: 0.2 },
-                          layout: { duration: 0.3 }
-                        }}
                         className={cn(
-                          "group transition-colors border-gray-50 cursor-pointer",
-                          !notification.read ? "bg-blue-50/30 font-medium" : "bg-transparent"
+                          "border-none group transition-colors cursor-pointer",
+                          !notification.read ? "bg-primary/[0.03] hover:bg-primary/[0.05]" : "bg-transparent hover:bg-gray-50/50"
                         )}
                         onClick={() => markAsRead(notification.id)}
                       >
-                        <TableCell className="text-center py-4">
+                        <TableCell className="text-center py-5 px-6">
                           <div className="flex justify-center">
-                            {getTypeIcon(notification.type)}
+                            <div className={cn(
+                              "w-10 h-10 rounded-full flex items-center justify-center relative",
+                              !notification.read && "after:content-[''] after:absolute after:top-0 after:right-0 after:w-2.5 after:h-2.5 after:bg-primary after:rounded-full after:border-2 after:border-white"
+                            )}>
+                              {getTypeIcon(notification.type)}
+                            </div>
                           </div>
                         </TableCell>
-                        <TableCell className="py-4">
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-sm font-semibold text-gray-900 leading-tight">{notification.title}</span>
-                            <span className="text-[12px] text-muted-foreground line-clamp-2 sm:line-clamp-1">{notification.message}</span>
-                            {/* Mobile only time display */}
-                            <span className="sm:hidden text-[10px] text-muted-foreground mt-1">{notification.time}</span>
+                        <TableCell className="py-5 px-6">
+                          <div className="flex flex-col gap-1">
+                            <span className={cn(
+                              "text-[15px] leading-tight",
+                              !notification.read ? "font-semibold text-gray-900" : "font-normal text-gray-600"
+                            )}>{notification.title}</span>
+                            <span className="text-sm text-gray-500 leading-normal line-clamp-1">{notification.message}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="hidden md:table-cell py-4">
-                          <Badge className={cn("capitalize font-normal rounded-full px-3 py-0.5 border text-[11px]", getTypeStyles(notification.type))}>
+                        <TableCell className="hidden md:table-cell py-5 px-6">
+                          <Badge className={cn("capitalize font-normal rounded-full px-4 py-1 border text-xs shadow-none", getTypeStyles(notification.type))}>
                             {notification.type}
                           </Badge>
                         </TableCell>
-                        <TableCell className="hidden sm:table-cell text-right text-xs text-muted-foreground py-4">
+                        <TableCell className="hidden sm:table-cell text-right text-sm text-gray-500 py-5 px-6">
                           {notification.time}
                         </TableCell>
-                        <TableCell className="text-right pr-6 py-4">
+                        <TableCell className="text-right pr-8 py-5">
                           <div className="flex items-center justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
+                            <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 deleteNotification(notification.id);
                               }}
-                              className="w-8 h-8 sm:w-9 sm:h-9 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl"
+                              className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all cursor-pointer"
                             >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                              <Trash2 size={18} />
+                            </button>
                           </div>
                         </TableCell>
-                      </motion.tr>
+                      </TableRow>
                     ))
                   ) : (
-                    <TableRow>
-                      <TableCell colSpan={5} className="h-64 text-center">
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="flex flex-col items-center justify-center text-muted-foreground"
-                        >
-                          <div className="p-4 rounded-full bg-gray-50 mb-3">
-                            <Bell className="w-12 h-12 text-gray-300" />
+                    <TableRow className="border-none">
+                      <TableCell colSpan={5} className="h-96 text-center">
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center mb-4">
+                            <Bell className="w-10 h-10 text-gray-300" />
                           </div>
-                          <p className="text-lg font-medium text-gray-400">No notifications found</p>
-                          <p className="text-sm">You&apos;re all caught up!</p>
-                        </motion.div>
+                          <p className="text-lg font-medium text-gray-800">No notifications found</p>
+                          <p className="text-[15px] text-gray-500 mt-1">You&apos;re all caught up for now!</p>
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}

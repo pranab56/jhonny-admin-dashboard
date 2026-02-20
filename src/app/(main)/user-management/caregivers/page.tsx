@@ -227,7 +227,7 @@ export default function CaregiversPage() {
                                     <CreditCard size={20} className="text-[#2ECC71]" />
                                   </div>
                                   <div>
-                                    <p className="text-[14px] font-bold text-gray-800">State ID / Driver's License</p>
+                                    <p className="text-[14px] font-bold text-gray-800">State ID / Driver&apos;s License</p>
                                     <p className="text-[12px] font-medium text-[#2ECC71]">Verified Oct 16, 2023</p>
                                   </div>
                                 </div>

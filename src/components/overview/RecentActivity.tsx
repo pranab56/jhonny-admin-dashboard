@@ -46,20 +46,20 @@ export default function RecentActivity() {
     >
       <Card className="border-none bg-white rounded-2xl overflow-hidden shadow-none p-0">
         <CardContent className="p-0">
-          <div className="p-6 sm:p-8 flex items-center justify-between">
+          <div className="p-6 sm:p-8 flex flex-row items-center justify-between gap-4">
             <h2 className="text-xl font-semibold text-gray-800">Recent Activity Feed</h2>
-            <Link href="/all-logs" className="text-sm font-normal text-[#6C63FF] hover:underline transition-all">
+            <Link href="/all-logs" className="text-sm font-normal text-[#6C63FF] hover:underline transition-all whitespace-nowrap">
               View All Log
             </Link>
           </div>
 
           <div className="px-6 sm:px-8 pb-8 space-y-8">
-            {activities.map((activity, index) => (
+            {activities.map((activity) => (
               <div key={activity.id} className="flex items-start gap-4">
                 <div className={cn("p-3 rounded-full flex-shrink-0", activity.iconBg)}>
                   <activity.icon className={cn("w-5 h-5", activity.iconColor)} />
                 </div>
-                <div className="flex-1 flex justify-between gap-4">
+                <div className="flex-1 flex flex-col sm:flex-row justify-between sm:items-start gap-2 sm:gap-4">
                   <div className="space-y-1">
                     <h4 className="text-[15px] font-semibold text-gray-800 leading-tight">
                       {activity.title}

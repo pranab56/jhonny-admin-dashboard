@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Bell, Search } from "lucide-react"
+import { Bell } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 
 export default function MyNavber() {
@@ -38,10 +38,7 @@ export default function MyNavber() {
 
       <div className="flex items-center gap-2 sm:gap-6 shrink-0">
 
-        {/* Search - Icon only on mobile */}
-        <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl text-[#64748B] hover:bg-accent hover:text-foreground hidden sm:flex">
-          <Search className="h-5 w-5" />
-        </Button>
+
 
         <Button
           onClick={() => router.push("/notification")}

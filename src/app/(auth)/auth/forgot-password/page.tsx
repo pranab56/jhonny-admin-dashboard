@@ -97,7 +97,7 @@ export default function ForgotPassword() {
                       if (errors.email) setErrors({});
                     }}
                     className={cn(
-                      "bg-[#EBF2FA] border-none rounded-2xl focus-visible:ring-1 px-5 transition-all text-lg",
+                      "bg-[#EBF2FA] border-none h-12 rounded-2xl focus-visible:ring-1 px-5 transition-all text-lg",
                       errors.email ? "focus-visible:ring-red-500 bg-red-50/50" : "focus-visible:ring-[#1D68D5]"
                     )}
                   />

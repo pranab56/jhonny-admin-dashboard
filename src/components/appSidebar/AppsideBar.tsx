@@ -120,6 +120,7 @@ export default function AppSideBar() {
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         asChild
+                        size="lg"
                         tooltip={isCollapsed ? item.name : undefined}
                         onClick={handleItemClick}
                         className={cn(
@@ -127,15 +128,15 @@ export default function AppSideBar() {
                           active
                             ? "bg-primary text-white hover:bg-primary/90 hover:text-white"
                             : "text-[#8E98A8] hover:bg-gray-50 hover:text-[#1A1D2E]",
-                          isCollapsed && "justify-center p-0"
+                          isCollapsed && "!h-12 !w-12 !p-0 justify-center mx-auto"
                         )}
                       >
-                        <Link href={item.path} className={cn(
+                        <Link href={item.children ? item.children[0].path : item.path} className={cn(
                           "flex items-center gap-4 w-full",
                           isCollapsed && "justify-center"
                         )}>
                           <item.icon className={cn(
-                            "w-5 h-5 shrink-0 transition-transform duration-300",
+                            "w-6 h-6 shrink-0 transition-transform duration-300",
                           )} />
                           {!isCollapsed && (
                             <span className="text-[17px] font-medium">
@@ -195,8 +196,8 @@ export default function AppSideBar() {
             )}
             title={isCollapsed ? "Logout" : undefined}
           >
-            <LogOut className="w-5 h-5" />
-            {!isCollapsed && <span className="text-[17px] font-semibold">Layout</span>}
+            <LogOut className="w-6 h-6" />
+            {!isCollapsed && <span className="text-[17px] font-semibold">Logout</span>}
           </button>
         </SidebarFooter>
 

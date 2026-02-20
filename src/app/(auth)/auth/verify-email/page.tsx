@@ -97,7 +97,7 @@ export default function VerifyEmail() {
                   onChange={(e) => handleOtpChange(e.target.value, index)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
                   className={cn(
-                    "w-12 h-12 sm:w-14 sm:h-16 text-center text-2xl font-medium border-none rounded-2xl bg-[#EBF2FA] outline-none transition-all flex items-center justify-center",
+                    "w-12 h-12 sm:w-14 sm:h-12 text-center text-2xl font-medium border-none rounded-2xl bg-[#EBF2FA] outline-none transition-all flex items-center justify-center",
                     activeInput === index ? "ring-2 ring-[#1D68D5] bg-white transition-shadow" : "focus:ring-2 focus:ring-[#1D68D5]",
                     data ? "bg-white ring-1 ring-[#1D68D5]" : ""
                   )}

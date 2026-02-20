@@ -86,7 +86,7 @@ export default function LoginPage() {
                   if (errors.email) setErrors({ ...errors, email: undefined });
                 }}
                 className={cn(
-                  " bg-[#EBF2FA] border-none rounded-2xl focus-visible:ring-1 px-5 transition-all",
+                  " bg-[#EBF2FA] border-none h-12 rounded-2xl focus-visible:ring-1 px-5 transition-all",
                   errors.email ? "focus-visible:ring-red-500 bg-red-50/50" : "focus-visible:ring-[#1D68D5]"
                 )}
               />
@@ -109,14 +109,14 @@ export default function LoginPage() {
                     if (errors.password) setErrors({ ...errors, password: undefined });
                   }}
                   className={cn(
-                    " bg-[#EBF2FA] border-none rounded-2xl focus-visible:ring-1 px-5 transition-all pr-12",
+                    " bg-[#EBF2FA] border-none h-12 rounded-2xl focus-visible:ring-1 px-5 transition-all pr-12",
                     errors.password ? "focus-visible:ring-red-500 bg-red-50/50" : "focus-visible:ring-[#1D68D5]"
                   )}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 cursor-pointer top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#1A1D2E] transition-colors"
+                  className="absolute right-4 h-12 cursor-pointer top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#1A1D2E] transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
