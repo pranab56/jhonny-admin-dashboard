@@ -6,8 +6,8 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import "../globals.css";
 
 export const metadata: Metadata = {
-  title: "Legalize Docs Admin Dashboard",
-  description: "Legalize Docs Admin Dashboard for Future Pharmacy",
+  title: "jhonny Admin Dashboard",
+  description: "jhonny Admin Dashboard",
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
   },
