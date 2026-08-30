@@ -28,6 +28,11 @@ import Image from 'next/image';
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
+import { removeToken } from "@/utils/storage";
+import { logout } from "@/features/auth/authSlice";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+
 type MenuItem = {
   name: string;
   path: string;
@@ -63,6 +68,7 @@ const clientMenuItems: MenuItem[] = [
 export default function AppSideBar() {
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useDispatch();
   const { state, isMobile, setOpenMobile } = useSidebar();
   const isCollapsed = state === "collapsed" && !isMobile;
 
@@ -73,8 +79,12 @@ export default function AppSideBar() {
 
   const handleLogout = () => {
     if (isMobile) setOpenMobile(false);
-    router.push("/auth/login");
+    removeToken();
+    dispatch(logout());
+    toast.success("Logged out successfully");
+    router.replace("/auth/login");
   };
+
 
   const handleItemClick = () => {
     if (isMobile) {

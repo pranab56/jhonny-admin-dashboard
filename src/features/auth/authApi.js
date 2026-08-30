@@ -1,9 +1,8 @@
 import { baseApi } from "../../utils/apiBaseQuery";
 
-
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Login
+    // Login mutation
     login: builder.mutation({
       query: (credentials) => ({
         url: "/auth/login",
@@ -12,60 +11,56 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-    forgotEmail: builder.mutation({
-      query: (forgotEmail) => ({
-        url: "/auth/forgot-password-otp",
+    // Forgot Password / Send OTP mutation
+    forgotPassword: builder.mutation({
+      query: (data) => ({
+        url: "/auth/send-otp",
         method: "POST",
-        body: forgotEmail,
-      }),
-    }),
-
-    forgotEmailOTPCheck: builder.mutation({
-      query: ({ otp, token }) => ({
-        url: "/auth/forgot-password-otp-match",
-        method: "PATCH",
-        headers: {
-          token: token,
-          "Content-Type": "application/json"
-        },
-        body: { otp },  // <-- must be an object
-      }),
-    }),
-
-    resendPassword: builder.mutation({
-      query: (token) => ({
-        url: "/otp/resend-otp",
-        method: "PATCH",
-        headers: {
-          token: token,
-          "Content-Type": "application/json"
+        body: {
+          email: data.email,
+          isResetPassword: data.isResetPassword ?? true,
         },
       }),
     }),
 
+    // Verify OTP mutation
+    verifyOtp: builder.mutation({
+      query: ({ email, otp }) => ({
+        url: "/auth/verify-email",
+        method: "POST",
+        body: {
+          email,
+          otp: Number(otp),
+        },
+      }),
+    }),
+
+    // Reset Password mutation (requires Bearer token header)
     resetPassword: builder.mutation({
-      query: ({ token, newPassword, confirmPassword }) => ({
-        url: "/auth/forgot-password-reset",
-        method: "PATCH",
+      query: ({ newPassword, confirmPassword, token }) => ({
+        url: "/auth/reset-password",
+        method: "POST",
         headers: {
-          token: `${token}`,
-          "Content-Type": "application/json"
+          Authorization: `Bearer ${token}`,
         },
         body: {
-          newPassword: newPassword,
-          confirmPassword: confirmPassword,
+          newPassword,
+          confirmPassword,
         },
       }),
     }),
-
   }),
 });
 
 // Export hooks
 export const {
   useLoginMutation,
-  useForgotEmailMutation,
-  useForgotEmailOTPCheckMutation,
+  useForgotPasswordMutation,
+  useVerifyOtpMutation,
   useResetPasswordMutation,
-  useResendPasswordMutation
 } = authApi;
+
+export const useForgotEmailMutation = useForgotPasswordMutation;
+export const useForgotEmailOTPCheckMutation = useVerifyOtpMutation;
+
+

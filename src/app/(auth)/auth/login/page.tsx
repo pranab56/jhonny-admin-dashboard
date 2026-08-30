@@ -4,20 +4,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { useLoginMutation } from '@/features/auth/authApi';
+import { setToken, setUser } from '@/features/auth/authSlice';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { FormEvent, useEffect, useState, Suspense } from 'react';
 import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const dispatch = useDispatch();
+  const [login, { isLoading }] = useLoginMutation();
+
+  useEffect(() => {
+    if (searchParams.get("reason") === "expired") {
+      toast.error("please login", { id: "session-expired" });
+    }
+  }, [searchParams]);
 
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -30,8 +41,6 @@ export default function LoginPage() {
 
     if (!password) {
       newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
     }
 
     setErrors(newErrors);
@@ -45,22 +54,24 @@ export default function LoginPage() {
       return;
     }
 
-    setIsLoading(true);
+    try {
+      const response = await login({ email, password }).unwrap();
 
-    // Simulate login delay
-    setTimeout(() => {
-      setIsLoading(false);
-      if (email === 'my@gmail.com' && password === 'hello123') {
-        toast.success('Login successful!');
-        router.push('/my-dashboard');
-      } else if (email === 'provider@gmail.com' && password === 'hello123') {
-        toast.success('Login successful!');
-        router.push('/provider');
+      if (response?.data?.accessToken) {
+        dispatch(setToken(response.data.accessToken));
+        if (response?.data?.user) {
+          dispatch(setUser(response.data.user));
+        }
+        toast.success(response.message || 'Login successful!');
+        router.push('/');
+      } else {
+        toast.error(response?.message || 'Login failed. Token not received.');
       }
-      else {
-        toast.error('Invalid email or password!');
-      }
-    }, 1500);
+    } catch (err: unknown) {
+      console.error('Login error:', err);
+      const error = err as { data?: { message?: string }; message?: string };
+      toast.error(error?.data?.message || error?.message || 'Invalid email or password!');
+    }
   };
 
   return (
@@ -72,7 +83,6 @@ export default function LoginPage() {
             <h1 className="text-[2rem] font-medium text-[#1A1D2E] mb-2">Welcome Back!</h1>
             <p className="text-[#64748B] text-base">Please enter your details to login</p>
           </div>
-
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
@@ -149,5 +159,19 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#EEF2F9]">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1D68D5] border-t-transparent" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

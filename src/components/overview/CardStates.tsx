@@ -2,36 +2,47 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useGetAllStateQuery } from "@/features/overview/overviewApi";
 import { motion } from "framer-motion";
-import { CalendarDays, ClipboardList, Users } from "lucide-react";
-
-const stats = [
-  {
-    title: "Total Users",
-    value: "1,525",
-    icon: Users,
-    iconBg: "bg-[#F3F0FF]",
-    iconColor: "text-[#6C63FF]"
-  },
-  {
-    title: "Active Bookings",
-    value: "85",
-    icon: CalendarDays,
-    iconBg: "bg-[#E6F6FF]",
-    iconColor: "text-[#4DB6FF]"
-  },
-  {
-    title: "Pending Approvals",
-    value: "12",
-    icon: ClipboardList,
-    iconBg: "bg-[#FFF4E6]",
-    iconColor: "text-[#FFA500]"
-  },
-];
+import { CalendarDays, ClipboardList, DollarSign, Users } from "lucide-react";
 
 export default function CardStates() {
+  const { data, isLoading } = useGetAllStateQuery(undefined);
+  const statsData = data?.data;
+
+  const stats = [
+    {
+      title: "Total Users",
+      value: isLoading ? "..." : (statsData?.totalUsers ?? 0).toLocaleString(),
+      icon: Users,
+      iconBg: "bg-[#F3F0FF]",
+      iconColor: "text-[#6C63FF]"
+    },
+    {
+      title: "Active Bookings",
+      value: isLoading ? "..." : (statsData?.activeBookings ?? 0).toLocaleString(),
+      icon: CalendarDays,
+      iconBg: "bg-[#E6F6FF]",
+      iconColor: "text-[#4DB6FF]"
+    },
+    {
+      title: "Pending Approvals",
+      value: isLoading ? "..." : (statsData?.pendingApprovals ?? 0).toLocaleString(),
+      icon: ClipboardList,
+      iconBg: "bg-[#FFF4E6]",
+      iconColor: "text-[#FFA500]"
+    },
+    {
+      title: "Total Revenue",
+      value: isLoading ? "..." : `$${(statsData?.totalRevenue ?? 0).toLocaleString()}`,
+      icon: DollarSign,
+      iconBg: "bg-[#EBFDF3]",
+      iconColor: "text-[#12B76A]"
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat, index) => (
         <motion.div
           key={stat.title}
@@ -57,3 +68,4 @@ export default function CardStates() {
     </div>
   );
 }
+

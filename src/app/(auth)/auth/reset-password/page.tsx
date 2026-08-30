@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useResetPasswordMutation } from "@/features/auth/authApi";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { FormEvent, useState, Suspense } from "react";
 import toast from "react-hot-toast";
 
-export default function ResetPassword() {
+function ResetPasswordForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,19 +20,23 @@ export default function ResetPassword() {
     password?: string;
     confirmPassword?: string;
   }>({});
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") || (typeof window !== "undefined" ? sessionStorage.getItem("resetToken") : "") || "";
+
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
   const validate = () => {
     const newErrors: { password?: string; confirmPassword?: string } = {};
 
     if (!password) {
       newErrors.password = "Password is required";
-    } else if (password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
     }
 
-    if (password !== confirmPassword) {
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Confirm password is required";
+    } else if (password !== confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
@@ -43,17 +49,28 @@ export default function ResetPassword() {
 
     if (!validate()) return;
 
-    setIsLoading(true);
+    if (!token) {
+      toast.error("Reset token is missing or expired. Please request a new OTP.");
+      return;
+    }
+
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await resetPassword({
+        newPassword: password,
+        confirmPassword,
+        token,
+      }).unwrap();
+
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("resetToken");
+      }
+
       setIsSuccess(true);
-      toast.success("Password reset successful!");
-    } catch (error) {
+      toast.success(response?.message || "Password reset successfully. Please log in.");
+    } catch (error: unknown) {
       console.error("Reset error:", error);
-      toast.error("An error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
+      const err = error as { data?: { message?: string }; message?: string };
+      toast.error(err?.data?.message || err?.message || "Password reset failed. Please try again.");
     }
   };
 
@@ -72,7 +89,7 @@ export default function ResetPassword() {
               <p className="text-base text-[#64748B] mb-8 leading-relaxed">
                 Your password has been updated successfully. You can now log in with your new password.
               </p>
-              <Link href="/login">
+              <Link href="/auth/login">
                 <Button className="w-full h-12 bg-[#1D68D5] hover:bg-[#1A5BBF] text-white rounded-2xl text-lg font-medium shadow-lg transition-all">
                   Proceed to Login
                 </Button>
@@ -84,7 +101,7 @@ export default function ResetPassword() {
               <div className="text-center mb-10">
                 <h1 className="text-[2rem] font-medium text-[#1A1D2E] mb-4 text-center">Create New Password</h1>
                 <p className="text-[#64748B] text-base leading-relaxed max-w-[420px] mx-auto">
-                  Please enter a new password for your account. Make sure it&apos;s at least 8 characters long and includes a mix of characters.
+                  Please enter a new password for your account.
                 </p>
               </div>
 
@@ -174,5 +191,19 @@ export default function ResetPassword() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPassword() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#EEF2F9]">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1D68D5] border-t-transparent" />
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

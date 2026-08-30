@@ -2,17 +2,25 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useVerifyOtpMutation, useForgotPasswordMutation } from "@/features/auth/authApi";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useRef, useState, Suspense } from "react";
 import toast from "react-hot-toast";
 
-export default function VerifyEmail() {
+function VerifyEmailForm() {
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const [activeInput, setActiveInput] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState(59);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email") || "";
+
+  const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
+  const [forgotPassword, { isLoading: isResending }] = useForgotPasswordMutation();
 
   useEffect(() => {
     if (timer > 0) {
@@ -23,11 +31,9 @@ export default function VerifyEmail() {
 
   const handleOtpChange = (value: string, index: number) => {
     const newOtp = [...otp];
-    // Take only the last character entered
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
 
-    // If a value was entered, move to the next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
       setActiveInput(index + 1);
@@ -46,27 +52,51 @@ export default function VerifyEmail() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const code = otp.join("");
-    if (code.length < 6) return;
+    if (code.length < 6) {
+      toast.error("Please enter complete 6-digit code");
+      return;
+    }
 
-    setIsLoading(true);
+    if (!email) {
+      toast.error("Email address missing. Please go back to forgot password.");
+      return;
+    }
+
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Verifying OTP:", code);
-      toast.success("Email verified successfully!");
-    } catch (error) {
+      const response = await verifyOtp({ email, otp: Number(code) }).unwrap();
+      const resetToken = response?.data?.resetToken;
+
+      if (resetToken) {
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("resetToken", resetToken);
+        }
+        toast.success(response?.message || "Email verified successfully!");
+        router.push(`/auth/reset-password?token=${encodeURIComponent(resetToken)}`);
+      } else {
+        toast.error(response?.message || "Verification failed. Token not received.");
+      }
+    } catch (error: unknown) {
       console.error("Verification error:", error);
-      toast.error("Invalid verification code.");
-    } finally {
-      setIsLoading(false);
+      const err = error as { data?: { message?: string }; message?: string };
+      toast.error(err?.data?.message || err?.message || "Invalid verification code.");
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (timer === 0) {
-      setTimer(59);
-      console.log("Resending OTP...");
-      toast.success("New code sent to your email!");
+      if (!email) {
+        toast.error("Email address missing.");
+        return;
+      }
+      try {
+        const response = await forgotPassword({ email, isResetPassword: true }).unwrap();
+        setTimer(59);
+        toast.success(response?.message || "New code sent to your email!");
+      } catch (error: unknown) {
+        console.error("Resend error:", error);
+        const err = error as { data?: { message?: string }; message?: string };
+        toast.error(err?.data?.message || err?.message || "Failed to resend code.");
+      }
     }
   };
 
@@ -78,7 +108,7 @@ export default function VerifyEmail() {
           <div className="text-center mb-10">
             <h1 className="text-[2rem] font-medium text-[#1A1D2E] mb-4">Verify Email</h1>
             <p className="text-[#64748B] text-base max-w-[400px] mx-auto">
-              Please enter the 6-digit verification code sent to your email.
+              Please enter the 6-digit verification code sent to <span className="font-semibold text-[#1A1D2E]">{email || "your email"}</span>.
             </p>
           </div>
 
@@ -122,13 +152,13 @@ export default function VerifyEmail() {
             <p className="text-[#64748B] text-base mb-2 text-base font-medium">Didn&apos;t receive the code?</p>
             <button
               onClick={handleResend}
-              disabled={timer > 0}
+              disabled={timer > 0 || isResending}
               className={cn(
                 "text-lg font-medium transition-colors text-base",
-                timer > 0 ? "text-[#94A3B8] cursor-not-allowed" : "text-[#1D68D5] hover:underline"
+                timer > 0 || isResending ? "text-[#94A3B8] cursor-not-allowed" : "text-[#1D68D5] hover:underline"
               )}
             >
-              {timer > 0 ? `Resend code in ${timer}s` : "Resend code"}
+              {timer > 0 ? `Resend code in ${timer}s` : isResending ? "Sending..." : "Resend code"}
             </button>
           </div>
 
@@ -140,5 +170,19 @@ export default function VerifyEmail() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmail() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#EEF2F9]">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1D68D5] border-t-transparent" />
+        </div>
+      }
+    >
+      <VerifyEmailForm />
+    </Suspense>
   );
 }
