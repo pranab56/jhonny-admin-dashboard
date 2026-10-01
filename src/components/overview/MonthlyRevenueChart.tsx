@@ -21,6 +21,8 @@ import {
   YAxis,
 } from "recharts";
 
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+
 interface RevenueChartItem {
   label?: string;
   month?: string;
@@ -96,9 +98,7 @@ export default function MonthlyRevenueChart() {
         </CardHeader>
         <CardContent className="h-[300px] sm:h-[350px] lg:h-[400px] w-full px-4 sm:px-6 pb-6 mt-2 relative">
           {isLoading ? (
-            <div className="flex h-full w-full items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#4DB6FF] border-t-transparent" />
-            </div>
+            <LoadingSpinner message="Loading chart data..." className="h-full py-0" />
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <RechartsBarChart

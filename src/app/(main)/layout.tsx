@@ -3,6 +3,7 @@ import OptimusSidebar from "@/components/appSidebar/AppsideBar";
 import Header from "@/components/header/Header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import SocketListener from "@/components/SocketListener";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <ProtectedRoute>
+      <SocketListener />
       <SidebarProvider>
         <OptimusSidebar />
         <SidebarInset className="bg-gray-100 min-h-svh flex flex-col overflow-hidden">

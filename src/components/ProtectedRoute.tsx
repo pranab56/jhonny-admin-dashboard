@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
     const token = getToken();
@@ -26,18 +26,18 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
   }, [router]);
 
-  if (isAuthenticated === null || isAuthenticated === false) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1D68D5] border-t-transparent" />
-          <p className="text-sm font-medium text-gray-500">
-            {isAuthenticated === false ? "Redirecting to Login..." : "Authenticating..."}
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // if (isAuthenticated === null || isAuthenticated === false) {
+  //   return (
+  //     <div className="flex h-screen w-full items-center justify-center bg-gray-50">
+  //       <div className="flex flex-col items-center gap-3">
+  //         <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#1D68D5] border-t-transparent" />
+  //         <p className="text-sm font-medium text-gray-500">
+  //           {isAuthenticated === false ? "Redirecting to Login..." : "Authenticating..."}
+  //         </p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return <>{children}</>;
 }
